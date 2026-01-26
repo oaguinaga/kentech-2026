@@ -1,0 +1,51 @@
+/* Design Tokens - Banking Dashboard */
+
+:root {
+  /* Light Mode Colors */
+  --color-primary: 220 90% 56%; /* Blue for primary actions */
+  --color-secondary: 220 10% 50%; /* Gray for secondary actions */
+  
+  --color-background: 0 0% 100%; /* White */
+  --color-background-secondary: 220 20% 98%; /* Very light gray */
+  
+  --color-text: 220 20% 10%; /* Dark gray for text */
+  --color-text-secondary: 220 10% 40%; /* Medium gray for secondary text */
+  
+  --color-border: 220 20% 85%; /* Light gray for borders */
+  
+  /* Banking-specific colors */
+  --color-income: 142 71% 45%; /* Green for deposits/income */
+  --color-expense: 0 84% 60%; /* Red for withdrawals/expenses */
+  
+  /* Status colors */
+  --color-error: 0 84% 60%; /* Red for errors */
+  --color-success: 142 71% 45%; /* Green for success */
+}
+
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --color-primary: 220 90% 60%; /* Slightly lighter blue */
+  --color-secondary: 220 10% 60%; /* Lighter gray */
+  
+  --color-background: 220 20% 8%; /* Very dark blue-gray */
+  --color-background-secondary: 220 15% 12%; /* Dark gray */
+  
+  --color-text: 220 10% 95%; /* Almost white */
+  --color-text-secondary: 220 10% 70%; /* Light gray */
+  
+  --color-border: 220 20% 25%; /* Medium gray for borders */
+  
+  /* Banking-specific colors (slightly adjusted for dark mode) */
+  --color-income: 142 65% 50%; /* Slightly brighter green */
+  --color-expense: 0 75% 55%; /* Slightly brighter red */
+  
+  /* Status colors */
+  --color-error: 0 75% 55%;
+  --color-success: 142 65% 50%;
+}
+
+/* Usage in Tailwind: Use with hsl() function
+   Example: bg-[hsl(var(--color-primary))]
+   Or use the extended colors defined in tailwind.config.js
+*/
+
