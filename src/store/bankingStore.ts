@@ -24,6 +24,7 @@ interface BankingState {
   filters: TransactionFilters;
   currentPage: number;
   selectedCurrency: CurrencyCode;
+  isBalanceVisible: boolean;
 
   // Actions
   addTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
@@ -38,6 +39,7 @@ interface BankingState {
   importTransactions: (transactions: Transaction[]) => void;
   resetStore: () => void;
   setSelectedCurrency: (currency: CurrencyCode) => void;
+  toggleBalanceVisibility: () => void;
 
   // Computed selectors (getters)
   getBalance: () => number;
@@ -62,6 +64,7 @@ const initialState = {
   },
   currentPage: 1,
   selectedCurrency: 'EUR' as CurrencyCode,
+  isBalanceVisible: true,
 };
 
 /**
@@ -258,6 +261,11 @@ export const useBankingStore = create<BankingState>()(
       // Set selected currency
       setSelectedCurrency: (currency) => {
         set({ selectedCurrency: currency });
+      },
+
+      // Toggle balance visibility (privacy mode)
+      toggleBalanceVisibility: () => {
+        set((state) => ({ isBalanceVisible: !state.isBalanceVisible }));
       },
 
       // Computed: Get current balance

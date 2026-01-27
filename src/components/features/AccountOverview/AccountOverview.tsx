@@ -2,12 +2,13 @@ import { useCurrencyConversion } from '@/hooks';
 import { useBankingStore } from '@/store';
 import { formatCurrency } from '@/utils';
 import { Eye, EyeOff, TrendingDown, TrendingUp } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 export const AccountOverview = () => {
   const transactions = useBankingStore((state) => state.transactions);
+  const isBalanceVisible = useBankingStore((state) => state.isBalanceVisible);
+  const toggleBalanceVisibility = useBankingStore((state) => state.toggleBalanceVisibility);
   const { selectedCurrency, convert } = useCurrencyConversion();
-  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
   // Compute values in component to avoid infinite loops
   const balanceEUR = useMemo(() => {
@@ -51,7 +52,7 @@ export const AccountOverview = () => {
             {actualBalance}
           </p>
           <button
-            onClick={() => setIsBalanceVisible(!isBalanceVisible)}
+            onClick={toggleBalanceVisibility}
             className="p-1.5 rounded-lg hover:bg-background/50 transition-colors"
             aria-label={isBalanceVisible ? 'Hide balance' : 'Show balance'}
           >
@@ -66,13 +67,27 @@ export const AccountOverview = () => {
           <div className="flex items-center gap-1.5">
             <TrendingUp className="w-3.5 h-3.5 text-income" />
             <span className="text-text-secondary text-xs">
-              <span className="text-income font-medium">{formatCurrency(totalIncome, selectedCurrency)}</span> income
+              <span
+                className={`text-income font-medium transition-all ${
+                  isBalanceVisible ? 'blur-0' : 'blur-md select-none'
+                }`}
+              >
+                {formatCurrency(totalIncome, selectedCurrency)}
+              </span>{' '}
+              income
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <TrendingDown className="w-3.5 h-3.5 text-expense" />
             <span className="text-text-secondary text-xs">
-              <span className="text-expense font-medium">{formatCurrency(totalExpenses, selectedCurrency)}</span> expenses
+              <span
+                className={`text-expense font-medium transition-all ${
+                  isBalanceVisible ? 'blur-0' : 'blur-md select-none'
+                }`}
+              >
+                {formatCurrency(totalExpenses, selectedCurrency)}
+              </span>{' '}
+              expenses
             </span>
           </div>
         </div>

@@ -24,6 +24,7 @@ export const TransactionList = ({
   const filters = useBankingStore((state) => state.filters);
   const currentPage = useBankingStore((state) => state.currentPage);
   const setCurrentPage = useBankingStore((state) => state.setCurrentPage);
+  const isBalanceVisible = useBankingStore((state) => state.isBalanceVisible);
   const { selectedCurrency, convert } = useCurrencyConversion();
 
   // Compute filtered and paginated transactions in the component
@@ -130,7 +131,11 @@ export const TransactionList = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h4 className="font-semibold text-text truncate">{transaction.description}</h4>
-                    <span className={`text-base font-bold whitespace-nowrap tabular-nums ${getAmountColorClass(transaction.amount)}`}>
+                    <span
+                      className={`text-base font-bold whitespace-nowrap tabular-nums transition-all ${
+                        isBalanceVisible ? 'blur-0' : 'blur-md select-none'
+                      } ${getAmountColorClass(transaction.amount)}`}
+                    >
                       {formatCurrency(convert(transaction.amount), selectedCurrency)}
                     </span>
                   </div>
@@ -237,7 +242,11 @@ export const TransactionList = ({
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-text-secondary">
                     {transaction.type}
                   </td>
-                  <td className={`px-4 py-4 whitespace-nowrap text-sm font-semibold text-right ${getAmountColorClass(transaction.amount)}`}>
+                  <td
+                    className={`px-4 py-4 whitespace-nowrap text-sm font-semibold text-right transition-all ${
+                      isBalanceVisible ? 'blur-0' : 'blur-md select-none'
+                    } ${getAmountColorClass(transaction.amount)}`}
+                  >
                     {formatCurrency(convert(transaction.amount), selectedCurrency)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">

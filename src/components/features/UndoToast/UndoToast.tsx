@@ -7,6 +7,7 @@ import { RotateCcw, CheckCircle2 } from 'lucide-react';
 export const UndoToast = () => {
   const lastDeletedTransaction = useBankingStore((state) => state.lastDeletedTransaction);
   const lastAddedTransaction = useBankingStore((state) => state.lastAddedTransaction);
+  const isBalanceVisible = useBankingStore((state) => state.isBalanceVisible);
   const undoDelete = useBankingStore((state) => state.undoDelete);
   const undoAdd = useBankingStore((state) => state.undoAdd);
   const clearUndo = useBankingStore((state) => state.clearUndo);
@@ -65,7 +66,14 @@ export const UndoToast = () => {
               Transaction added
             </p>
             <p className="text-xs text-text-secondary truncate">
-              {lastAddedTransaction.description} • {formatCurrency(lastAddedTransaction.amount)}
+              {lastAddedTransaction.description} •{' '}
+              <span
+                className={`transition-all ${
+                  isBalanceVisible ? 'blur-0' : 'blur-md select-none'
+                }`}
+              >
+                {formatCurrency(lastAddedTransaction.amount)}
+              </span>
             </p>
           </div>
           <Button
