@@ -55,7 +55,7 @@ export const TransactionFilters = () => {
   }, [hasActiveFilters]);
 
   return (
-    <div className="mb-4 sm:mb-6">
+    <div className="mb-4 sm:mb-6 lg:mb-0">
       {/* Filter Toggle Button */}
       <div className="flex items-center justify-between mb-2">
         <button

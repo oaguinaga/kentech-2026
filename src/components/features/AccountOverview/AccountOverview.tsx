@@ -36,7 +36,7 @@ export const AccountOverview = () => {
   const actualBalance = formatCurrency(balance, selectedCurrency);
 
   return (
-    <div className="mb-6">
+    <div>
       {/* Main Balance Card */}
       <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20">
         <div className="mb-4">

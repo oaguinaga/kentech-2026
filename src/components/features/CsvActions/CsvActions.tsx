@@ -1,10 +1,14 @@
-import { useState, useRef } from 'react';
 import { useBankingStore } from '@/store';
-import { parseCsvFile, transactionsToCsv, downloadCsv } from '@/utils';
 import type { Transaction } from '@/types';
+import { downloadCsv, parseCsvFile, transactionsToCsv } from '@/utils';
 import { Download, Upload } from 'lucide-react';
+import { useRef, useState } from 'react';
 
-export const CsvActions = () => {
+export interface CsvActionsProps {
+  showLabels?: boolean;
+}
+
+export const CsvActions = ({ showLabels = false }: CsvActionsProps) => {
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +69,7 @@ export const CsvActions = () => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex gap-2">
       <input
         ref={fileInputRef}
         type="file"
@@ -77,20 +81,32 @@ export const CsvActions = () => {
       <button
         onClick={handleImportClick}
         disabled={isImporting}
-        className="p-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          showLabels ? 'w-full justify-start' : 'p-2'
+        }`}
         aria-label="Import CSV"
         title="Import CSV"
       >
         <Upload className={`w-4 h-4 text-text ${isImporting ? 'animate-pulse' : ''}`} />
+        {showLabels && (
+          <span className="text-sm font-medium text-text">
+            {isImporting ? 'Importing...' : 'Import CSV'}
+          </span>
+        )}
       </button>
       <button
         onClick={handleExport}
         disabled={transactions.length === 0}
-        className="p-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          showLabels ? 'w-full justify-start' : 'p-2'
+        }`}
         aria-label="Export CSV"
         title="Export CSV"
       >
         <Download className="w-4 h-4 text-text" />
+        {showLabels && (
+          <span className="text-sm font-medium text-text">Export CSV</span>
+        )}
       </button>
 
       {importError && (
