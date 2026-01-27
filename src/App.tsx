@@ -1,6 +1,6 @@
 import {
+  AccountActionsPanel,
   AccountOverview,
-  CsvActions,
   CurrencySelector,
   DevPanel,
   TransactionFilters,
@@ -122,7 +122,7 @@ function App() {
                   className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
                   aria-label="Add deposit"
                 >
-                  <BanknoteArrowDown className="w-5 h-5 text-text" />
+                  <BanknoteArrowUp className="w-5 h-5 text-text" />
                   <span className="font-medium text-text">Deposit</span>
                 </button>
                 <button
@@ -130,7 +130,7 @@ function App() {
                   className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
                   aria-label="Add withdrawal"
                 >
-                  <BanknoteArrowUp className="w-5 h-5 text-text" />
+                  <BanknoteArrowDown className="w-5 h-5 text-text" />
                   <span className="font-medium text-text">Withdraw</span>
                 </button>
                 <button
@@ -141,20 +141,12 @@ function App() {
                 >
                   <Plus className="w-5 h-5" />
                 </button>
-              </div>
-
-              {/* CSV Actions - Desktop with labels */}
-              <div className="hidden lg:block pt-2 border-t border-border">
-                <CsvActions showLabels={true} />
+                <AccountActionsPanel />
               </div>
             </div>
 
             {/* Right Column: Filters + Transactions */}
             <div>
-              {/* CSV Actions - Mobile (icons only) */}
-              <div className="lg:hidden flex items-center justify-end gap-2 mb-4">
-                <CsvActions showLabels={false} />
-              </div>
 
               {/* Filters - Aligned with balance on desktop (no top margin) */}
               <div className="lg:mt-0">

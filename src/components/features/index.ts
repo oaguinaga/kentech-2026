@@ -9,4 +9,5 @@ export type { CsvActionsProps } from './CsvActions';
 export { UndoToast } from './UndoToast';
 export { CurrencySelector } from './CurrencySelector';
 export { DevPanel } from './DevPanel';
+export { AccountActionsPanel } from './AccountActionsPanel';
 
