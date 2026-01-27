@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 
 export interface DialogProps {
   isOpen: boolean;
@@ -68,7 +68,7 @@ export const Dialog = ({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 w-full h-full bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 m-0 w-screen h-screen max-w-none max-h-none bg-transparent p-4"
       onClick={handleBackdropClick}
       aria-modal="true"
       aria-labelledby={title ? 'dialog-title' : undefined}

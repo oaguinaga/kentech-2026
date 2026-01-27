@@ -3,6 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* Dialog backdrop styling */
+  dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+}
+
 @layer base {
   * {
     border-color: hsl(var(--color-border));

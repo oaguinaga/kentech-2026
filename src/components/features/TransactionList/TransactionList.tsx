@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
-import { useBankingStore } from '@/store';
 import { Button } from '@/components/ui';
-import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
 import { useCurrencyConversion } from '@/hooks';
+import { useBankingStore } from '@/store';
 import type { Transaction } from '@/types';
-import { ArrowDownCircle, ArrowUpCircle, Edit2, Trash2, Copy } from 'lucide-react';
+import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
+import { ArrowDownCircle, ArrowUpCircle, Copy, Edit2, Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
 
 export interface TransactionListProps {
   onEdit?: (transaction: Transaction) => void;
@@ -130,39 +130,44 @@ export const TransactionList = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <h4 className="font-semibold text-text truncate">{transaction.description}</h4>
-                    <span className={`text-base font-bold whitespace-nowrap ${getAmountColorClass(transaction.amount)}`}>
+                    <span className={`text-base font-bold whitespace-nowrap tabular-nums ${getAmountColorClass(transaction.amount)}`}>
                       {formatCurrency(convert(transaction.amount), selectedCurrency)}
                     </span>
                   </div>
-                  <p className="text-xs text-text-secondary mb-3">{formatDate(transaction.date)}</p>
-                  <div className="flex items-center gap-2">
-                    {onEdit && (
-                      <button
-                        onClick={() => onEdit(transaction)}
-                        className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
-                        aria-label={`Edit ${transaction.description}`}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    )}
-                    {onReuse && (
-                      <button
-                        onClick={() => onReuse(transaction)}
-                        className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
-                        aria-label={`Reuse ${transaction.description}`}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(transaction)}
-                        className="p-1.5 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
-                        aria-label={`Delete ${transaction.description}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-text-secondary">{formatDate(transaction.date)}</p>
+                    <div className="flex items-center gap-1">
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(transaction)}
+                          className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          aria-label={`Edit ${transaction.description}`}
+                          title="Edit transaction"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {onReuse && (
+                        <button
+                          onClick={() => onReuse(transaction)}
+                          className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          aria-label={`Reuse ${transaction.description}`}
+                          title="Reuse transaction"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(transaction)}
+                          className="p-1.5 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
+                          aria-label={`Delete ${transaction.description}`}
+                          title="Delete transaction"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -240,28 +245,31 @@ export const TransactionList = ({
                       {onEdit && (
                         <button
                           onClick={() => onEdit(transaction)}
-                          className="p-2 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
                           aria-label={`Edit ${transaction.description}`}
+                          title="Edit transaction"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Edit2 className="w-3.5 h-3.5" />
                         </button>
                       )}
                       {onReuse && (
                         <button
                           onClick={() => onReuse(transaction)}
-                          className="p-2 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
                           aria-label={`Reuse ${transaction.description}`}
+                          title="Reuse transaction"
                         >
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-3.5 h-3.5" />
                         </button>
                       )}
                       {onDelete && (
                         <button
                           onClick={() => onDelete(transaction)}
-                          className="p-2 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
                           aria-label={`Delete ${transaction.description}`}
+                          title="Delete transaction"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       )}
                     </div>
