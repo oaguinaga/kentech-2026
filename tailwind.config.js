@@ -7,21 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Use CSS variables for theming
-        primary: 'var(--color-primary)',
-        secondary: 'var(--color-secondary)',
-        background: 'var(--color-background)',
-        'background-secondary': 'var(--color-background-secondary)',
-        text: 'var(--color-text)',
-        'text-secondary': 'var(--color-text-secondary)',
-        border: 'var(--color-border)',
-        income: 'var(--color-income)',
-        expense: 'var(--color-expense)',
-        error: 'var(--color-error)',
-        success: 'var(--color-success)',
+        // Use CSS variables with hsl() wrapper for theming
+        primary: 'hsl(var(--color-primary))',
+        secondary: 'hsl(var(--color-secondary))',
+        background: 'hsl(var(--color-background))',
+        'background-secondary': 'hsl(var(--color-background-secondary))',
+        text: 'hsl(var(--color-text))',
+        'text-secondary': 'hsl(var(--color-text-secondary))',
+        border: 'hsl(var(--color-border))',
+        income: 'hsl(var(--color-income))',
+        expense: 'hsl(var(--color-expense))',
+        error: 'hsl(var(--color-error))',
+        success: 'hsl(var(--color-success))',
       },
     },
   },
   plugins: [],
 }
-
