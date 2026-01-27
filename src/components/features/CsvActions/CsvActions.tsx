@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { useBankingStore } from '@/store';
-import { Button } from '@/components/ui';
 import { parseCsvFile, transactionsToCsv, downloadCsv } from '@/utils';
 import type { Transaction } from '@/types';
+import { Download, Upload } from 'lucide-react';
 
 export const CsvActions = () => {
   const [isImporting, setIsImporting] = useState(false);
@@ -65,39 +65,37 @@ export const CsvActions = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <div className="flex-1">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv"
-          onChange={handleImport}
-          className="hidden"
-          aria-label="Import CSV file"
-        />
-        <Button
-          variant="secondary"
-          onClick={handleImportClick}
-          isLoading={isImporting}
-          disabled={isImporting}
-        >
-          {isImporting ? 'Importing...' : 'Import CSV'}
-        </Button>
-      </div>
-
-      <div className="flex-1">
-        <Button
-          variant="secondary"
-          onClick={handleExport}
-          disabled={transactions.length === 0}
-        >
-          Export CSV
-        </Button>
-      </div>
+    <div className="flex items-center gap-2">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        onChange={handleImport}
+        className="hidden"
+        aria-label="Import CSV file"
+      />
+      <button
+        onClick={handleImportClick}
+        disabled={isImporting}
+        className="p-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Import CSV"
+        title="Import CSV"
+      >
+        <Upload className={`w-4 h-4 text-text ${isImporting ? 'animate-pulse' : ''}`} />
+      </button>
+      <button
+        onClick={handleExport}
+        disabled={transactions.length === 0}
+        className="p-2 rounded-lg bg-background hover:bg-background-secondary border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Export CSV"
+        title="Export CSV"
+      >
+        <Download className="w-4 h-4 text-text" />
+      </button>
 
       {importError && (
         <div
-          className="mt-2 p-3 bg-error/10 border border-error rounded-lg text-sm text-error"
+          className="absolute top-16 right-4 p-3 bg-error/10 border border-error rounded-lg text-sm text-error max-w-xs z-50"
           role="alert"
         >
           <strong>Import Error:</strong> {importError}

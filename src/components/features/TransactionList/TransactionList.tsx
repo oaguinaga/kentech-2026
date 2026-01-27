@@ -4,6 +4,7 @@ import { Button } from '@/components/ui';
 import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
 import { useCurrencyConversion } from '@/hooks';
 import type { Transaction } from '@/types';
+import { ArrowDownCircle, ArrowUpCircle, Edit2, Trash2, Copy } from 'lucide-react';
 
 export interface TransactionListProps {
   onEdit?: (transaction: Transaction) => void;
@@ -76,21 +77,23 @@ export const TransactionList = ({
   if (paginatedTransactions.length === 0) {
     return (
       <div className="text-center py-12">
-        <svg
-          className="mx-auto h-12 w-12 text-text-secondary"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-text">No transactions</h3>
-        <p className="mt-1 text-sm text-text-secondary">
+        <div className="mx-auto w-16 h-16 rounded-full bg-background-secondary flex items-center justify-center mb-4">
+          <svg
+            className="w-8 h-8 text-text-secondary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+        <h3 className="text-base font-semibold text-text mb-1">No transactions</h3>
+        <p className="text-sm text-text-secondary">
           Get started by adding your first transaction.
         </p>
       </div>
@@ -99,8 +102,77 @@ export const TransactionList = ({
 
   return (
     <div className="space-y-4">
-      {/* Transactions Table */}
-      <div className="overflow-x-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-text">Latest Transactions</h2>
+        {filteredCount > 0 && (
+          <span className="text-sm text-text-secondary">
+            {filteredCount} {filteredCount === 1 ? 'transaction' : 'transactions'}
+          </span>
+        )}
+      </div>
+
+      {/* Mobile Card Layout */}
+      <div className="space-y-3 sm:hidden">
+        {paginatedTransactions.map((transaction) => {
+          const isIncome = transaction.amount > 0;
+          const Icon = isIncome ? ArrowDownCircle : ArrowUpCircle;
+          
+          return (
+            <div
+              key={transaction.id}
+              className="bg-background rounded-xl p-4 border border-border hover:border-primary/30 transition-colors"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`p-2.5 rounded-xl ${isIncome ? 'bg-income/10' : 'bg-expense/10'}`}>
+                  <Icon className={`w-5 h-5 ${isIncome ? 'text-income' : 'text-expense'}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h4 className="font-semibold text-text truncate">{transaction.description}</h4>
+                    <span className={`text-base font-bold whitespace-nowrap ${getAmountColorClass(transaction.amount)}`}>
+                      {formatCurrency(convert(transaction.amount), selectedCurrency)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-secondary mb-3">{formatDate(transaction.date)}</p>
+                  <div className="flex items-center gap-2">
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(transaction)}
+                        className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                        aria-label={`Edit ${transaction.description}`}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    {onReuse && (
+                      <button
+                        onClick={() => onReuse(transaction)}
+                        className="p-1.5 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                        aria-label={`Reuse ${transaction.description}`}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(transaction)}
+                        className="p-1.5 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
+                        aria-label={`Delete ${transaction.description}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table Layout */}
+      <div className="hidden sm:block overflow-x-auto">
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-background-secondary">
             <tr>
@@ -137,57 +209,66 @@ export const TransactionList = ({
             </tr>
           </thead>
           <tbody className="bg-background divide-y divide-border">
-            {paginatedTransactions.map((transaction) => (
-              <tr
-                key={transaction.id}
-                className="hover:bg-background-secondary"
-              >
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-text">
-                  {formatDate(transaction.date)}
-                </td>
-                <td className="px-4 py-3 text-sm text-text">{transaction.description}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-text-secondary">
-                  {transaction.type}
-                </td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium text-right ${getAmountColorClass(transaction.amount)}`}>
-                  {formatCurrency(convert(transaction.amount), selectedCurrency)}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end gap-2">
-                    {onEdit && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(transaction)}
-                        aria-label={`Edit ${transaction.description}`}
-                      >
-                        Edit
-                      </Button>
-                    )}
-                    {onReuse && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onReuse(transaction)}
-                        aria-label={`Reuse ${transaction.description}`}
-                      >
-                        Reuse
-                      </Button>
-                    )}
-                    {onDelete && (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => onDelete(transaction)}
-                        aria-label={`Delete ${transaction.description}`}
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {paginatedTransactions.map((transaction) => {
+              const isIncome = transaction.amount > 0;
+              const Icon = isIncome ? ArrowDownCircle : ArrowUpCircle;
+              
+              return (
+                <tr
+                  key={transaction.id}
+                  className="hover:bg-background-secondary transition-colors"
+                >
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-text">
+                    {formatDate(transaction.date)}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-text">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1.5 rounded-lg ${isIncome ? 'bg-income/10' : 'bg-expense/10'}`}>
+                        <Icon className={`w-4 h-4 ${isIncome ? 'text-income' : 'text-expense'}`} />
+                      </div>
+                      {transaction.description}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-text-secondary">
+                    {transaction.type}
+                  </td>
+                  <td className={`px-4 py-4 whitespace-nowrap text-sm font-semibold text-right ${getAmountColorClass(transaction.amount)}`}>
+                    {formatCurrency(convert(transaction.amount), selectedCurrency)}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end gap-1">
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(transaction)}
+                          className="p-2 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          aria-label={`Edit ${transaction.description}`}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      )}
+                      {onReuse && (
+                        <button
+                          onClick={() => onReuse(transaction)}
+                          className="p-2 rounded-lg hover:bg-background-secondary text-text-secondary hover:text-text transition-colors"
+                          aria-label={`Reuse ${transaction.description}`}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(transaction)}
+                          className="p-2 rounded-lg hover:bg-expense/10 text-text-secondary hover:text-expense transition-colors"
+                          aria-label={`Delete ${transaction.description}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

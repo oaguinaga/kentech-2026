@@ -8,10 +8,11 @@ import {
   TransactionList,
   UndoButton,
 } from '@/components/features';
-import { Button, Dialog, ErrorBoundary } from '@/components/ui';
+import { Dialog, ErrorBoundary } from '@/components/ui';
 import { useDarkMode } from '@/hooks';
 import { useBankingStore } from '@/store';
 import type { Transaction } from '@/types';
+import { BanknoteArrowDown, BanknoteArrowUp, Moon, Plus, Sun } from 'lucide-react';
 import { useState } from 'react';
 
 function App() {
@@ -19,12 +20,25 @@ function App() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [reuseTransaction, setReuseTransaction] = useState<Transaction | undefined>();
+  const [defaultTransactionType, setDefaultTransactionType] = useState<'Deposit' | 'Withdrawal' | undefined>();
 
   const deleteTransaction = useBankingStore((state) => state.deleteTransaction);
   const { isDark, toggle } = useDarkMode();
 
   const handleAddClick = () => {
     setReuseTransaction(undefined);
+    setIsAddDialogOpen(true);
+  };
+
+  const handleAddDeposit = () => {
+    setReuseTransaction(undefined);
+    setDefaultTransactionType('Deposit');
+    setIsAddDialogOpen(true);
+  };
+
+  const handleAddWithdrawal = () => {
+    setReuseTransaction(undefined);
+    setDefaultTransactionType('Withdrawal');
     setIsAddDialogOpen(true);
   };
 
@@ -47,6 +61,7 @@ function App() {
   const handleAddSuccess = () => {
     setIsAddDialogOpen(false);
     setReuseTransaction(undefined);
+    setDefaultTransactionType(undefined);
   };
 
   const handleEditSuccess = () => {
@@ -57,6 +72,7 @@ function App() {
   const handleAddCancel = () => {
     setIsAddDialogOpen(false);
     setReuseTransaction(undefined);
+    setDefaultTransactionType(undefined);
   };
 
   const handleEditCancel = () => {
@@ -68,45 +84,21 @@ function App() {
     <ErrorBoundary>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-background-secondary border-b border-border sticky top-0 z-40">
+        <header className="bg-background border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-background/95">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <h1 className="text-2xl font-bold text-text">Banking Dashboard</h1>
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between h-14 sm:h-16">
+              <h1 className="text-xl sm:text-2xl font-bold text-text">Banking</h1>
+              <div className="flex items-center gap-2 sm:gap-3">
                 <CurrencySelector />
                 <button
                   onClick={toggle}
-                  className="p-2 rounded-lg hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="p-2 rounded-lg hover:bg-background-secondary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                   aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 >
                   {isDark ? (
-                    <svg
-                      className="w-6 h-6 text-text"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>
+                    <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-text" />
                   ) : (
-                    <svg
-                      className="w-6 h-6 text-text"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                      />
-                    </svg>
+                    <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-text" />
                   )}
                 </button>
               </div>
@@ -115,30 +107,49 @@ function App() {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
           {/* Account Overview */}
           <AccountOverview />
 
-          {/* Actions Bar */}
-          <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <Button
-              variant="primary"
-              onClick={handleAddClick}
-              className="w-full sm:w-auto"
+          {/* Quick Action Buttons */}
+          <div className="mb-6 flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={handleAddDeposit}
+              className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
+              aria-label="Add deposit"
             >
-              Add Transaction
-            </Button>
-            <CsvActions />
+              <BanknoteArrowDown className="w-5 h-5 text-text" />
+              <span className="font-medium text-text">Deposit</span>
+            </button>
+            <button
+              onClick={handleAddWithdrawal}
+              className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
+              aria-label="Add withdrawal"
+            >
+              <BanknoteArrowUp className="w-5 h-5 text-text" />
+              <span className="font-medium text-text">Withdraw</span>
+            </button>
+            <button
+              onClick={handleAddClick}
+              className="p-2.5 sm:p-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
+              aria-label="Add transaction"
+              title="Add transaction"
+            >
+              <Plus className="w-5 h-5 text-text" />
+            </button>
           </div>
-          {/* Undo Button */}
-          <UndoButton />
 
+          {/* Secondary Actions */}
+          <div className="mb-4 flex items-center justify-end gap-2">
+            <CsvActions />
+            <UndoButton />
+          </div>
 
           {/* Filters */}
           <TransactionFilters />
 
           {/* Transaction List */}
-          <div className="bg-background-secondary rounded-lg border border-border p-4 sm:p-6">
+          <div className="bg-background-secondary rounded-xl border border-border p-4 sm:p-6">
             <TransactionList
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -155,7 +166,7 @@ function App() {
           size="md"
         >
           <TransactionForm
-            defaultType={reuseTransaction?.type}
+            defaultType={defaultTransactionType || reuseTransaction?.type}
             onSuccess={handleAddSuccess}
             onCancel={handleAddCancel}
             reuseTransaction={reuseTransaction}
