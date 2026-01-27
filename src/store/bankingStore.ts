@@ -19,6 +19,7 @@ interface BankingState {
   // State
   transactions: Transaction[];
   lastDeletedTransaction: Transaction | null;
+  lastAddedTransaction: Transaction | null;
   filters: TransactionFilters;
   currentPage: number;
 
@@ -30,6 +31,7 @@ interface BankingState {
   clearFilters: () => void;
   setCurrentPage: (page: number) => void;
   undoDelete: () => void;
+  undoAdd: () => void;
   clearUndo: () => void;
   importTransactions: (transactions: Transaction[]) => void;
   resetStore: () => void;
@@ -48,6 +50,7 @@ const TRANSACTIONS_PER_PAGE = 20;
 const initialState = {
   transactions: [],
   lastDeletedTransaction: null,
+  lastAddedTransaction: null,
   filters: {
     dateFrom: null,
     dateTo: null,
@@ -140,6 +143,8 @@ export const useBankingStore = create<BankingState>()(
 
         set((state) => ({
           transactions: [...state.transactions, newTransaction],
+          lastAddedTransaction: newTransaction,
+          lastDeletedTransaction: null, // Clear delete undo when adding
           currentPage: 1, // Reset to first page when adding
         }));
       },
@@ -150,6 +155,8 @@ export const useBankingStore = create<BankingState>()(
           transactions: state.transactions.map((t) =>
             t.id === id ? { ...t, ...updates } : t
           ),
+          lastAddedTransaction: null, // Clear add undo when updating
+          lastDeletedTransaction: null, // Clear delete undo when updating
         }));
       },
 
@@ -162,6 +169,7 @@ export const useBankingStore = create<BankingState>()(
           return {
             transactions: state.transactions.filter((t) => t.id !== id),
             lastDeletedTransaction: transactionToDelete,
+            lastAddedTransaction: null, // Clear add undo when deleting
             // Adjust current page if needed
             currentPage:
               state.currentPage > 1 &&
@@ -204,9 +212,22 @@ export const useBankingStore = create<BankingState>()(
         }));
       },
 
+      // Undo last addition
+      undoAdd: () => {
+        const state = get();
+        if (!state.lastAddedTransaction) return;
+
+        set((currentState) => ({
+          transactions: currentState.transactions.filter(
+            (t) => t.id !== state.lastAddedTransaction!.id
+          ),
+          lastAddedTransaction: null,
+        }));
+      },
+
       // Clear undo state
       clearUndo: () => {
-        set({ lastDeletedTransaction: null });
+        set({ lastDeletedTransaction: null, lastAddedTransaction: null });
       },
 
       // Import transactions (for CSV import)

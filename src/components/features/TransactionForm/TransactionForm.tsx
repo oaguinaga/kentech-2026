@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -7,25 +7,12 @@ import { Button, Input, Select, DateInput } from '@/components/ui';
 import { getTodayDateString, formatCurrency as formatCurrencyUtil } from '@/utils';
 import type { Transaction, TransactionType } from '@/types';
 
-const transactionSchema = z
-  .object({
-    amount: z.number().min(0.01, 'Amount must be greater than 0'),
-    description: z.string().min(1, 'Description is required').max(200, 'Description must be 200 characters or less'),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
-    type: z.enum(['Deposit', 'Withdrawal']),
-  })
-  .refine(
-    (data) => {
-      // Deposit must be positive, Withdrawal must be negative
-      if (data.type === 'Deposit' && data.amount < 0) return false;
-      if (data.type === 'Withdrawal' && data.amount > 0) return false;
-      return true;
-    },
-    {
-      message: 'Amount sign must match transaction type',
-      path: ['amount'],
-    }
-  );
+const transactionSchema = z.object({
+  amount: z.number().min(0.01, 'Amount must be greater than 0'),
+  description: z.string().min(1, 'Description is required').max(200, 'Description must be 200 characters or less'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  type: z.enum(['Deposit', 'Withdrawal']),
+});
 
 type TransactionFormData = z.infer<typeof transactionSchema>;
 
@@ -48,6 +35,7 @@ export const TransactionForm = ({
   const updateTransaction = useBankingStore((state) => state.updateTransaction);
   const getBalance = useBankingStore((state) => state.getBalance);
   const isEditMode = !!transaction && !reuseTransaction;
+  const [submitError, setSubmitError] = useState<string | null>(null);
   
   // Use reuseTransaction for initial values if provided, otherwise use transaction
   const initialTransaction = reuseTransaction || transaction;
@@ -72,19 +60,17 @@ export const TransactionForm = ({
   const type = watch('type');
   const amount = watch('amount');
 
-  // Update amount sign when type changes (only if sign doesn't match)
+  // Ensure amount is always positive in the form (sign conversion happens on submit)
   useEffect(() => {
-    if (amount !== undefined && amount !== null && amount !== 0) {
-      const currentAmount = amount;
-      if (type === 'Deposit' && currentAmount < 0) {
-        setValue('amount', Math.abs(currentAmount), { shouldValidate: false });
-      } else if (type === 'Withdrawal' && currentAmount > 0) {
-        setValue('amount', -Math.abs(currentAmount), { shouldValidate: false });
-      }
+    if (amount !== undefined && amount !== null && amount < 0) {
+      // If user somehow enters negative, convert to positive
+      setValue('amount', Math.abs(amount), { shouldValidate: false });
     }
-  }, [type, setValue]);
+  }, [amount, setValue]);
 
   const onSubmit = async (data: TransactionFormData) => {
+    setSubmitError(null);
+    
     try {
       const currentBalance = getBalance();
       const transactionAmount = type === 'Deposit' ? data.amount : -data.amount;
@@ -93,10 +79,9 @@ export const TransactionForm = ({
       if (type === 'Withdrawal') {
         const newBalance = currentBalance + transactionAmount;
         if (newBalance < 0) {
-          // This should be caught by the form validation, but double-check
-          throw new Error(
-            `Insufficient balance. Available: ${formatCurrencyUtil(currentBalance)}, Attempted: ${formatCurrencyUtil(Math.abs(transactionAmount))}`
-          );
+          const errorMessage = `Insufficient balance. Available: ${formatCurrencyUtil(currentBalance)}, Attempted: ${formatCurrencyUtil(Math.abs(transactionAmount))}`;
+          setSubmitError(errorMessage);
+          return;
         }
       }
 
@@ -116,11 +101,13 @@ export const TransactionForm = ({
         });
       }
 
+      setSubmitError(null);
       reset();
       onSuccess?.();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setSubmitError(errorMessage);
       console.error('Error submitting transaction:', error);
-      // Error handling could be improved with toast notifications
     }
   };
 
@@ -130,6 +117,15 @@ export const TransactionForm = ({
       className="space-y-4"
       noValidate
     >
+      {submitError && (
+        <div
+          className="p-3 bg-error/10 border border-error rounded-lg text-sm text-error"
+          role="alert"
+        >
+          <strong>Error:</strong> {submitError}
+        </div>
+      )}
+
       <Select
         label="Type"
         options={[

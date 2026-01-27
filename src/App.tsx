@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import { ErrorBoundary } from '@/components/ui';
 import {
   AccountOverview,
+  CsvActions,
+  TransactionFilters,
   TransactionForm,
   TransactionList,
-  TransactionFilters,
-  CsvActions,
   UndoButton,
 } from '@/components/features';
-import { useBankingStore } from '@/store';
+import { Button, Dialog, ErrorBoundary } from '@/components/ui';
 import { useDarkMode } from '@/hooks';
-import { Button, Dialog } from '@/components/ui';
+import { useBankingStore } from '@/store';
 import type { Transaction } from '@/types';
+import { useState } from 'react';
 
 function App() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -128,9 +127,9 @@ function App() {
             </Button>
             <CsvActions />
           </div>
-
           {/* Undo Button */}
           <UndoButton />
+
 
           {/* Filters */}
           <TransactionFilters />
