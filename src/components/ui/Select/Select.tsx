@@ -1,5 +1,5 @@
-import { forwardRef } from 'react';
 import type { SelectHTMLAttributes } from 'react';
+import { forwardRef } from 'react';
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -26,11 +26,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const helperId = helperText ? `${selectId}-helper` : undefined;
 
     const baseStyles =
-      'w-full px-3 py-2 border rounded-lg bg-background text-text focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors appearance-none cursor-pointer';
+      'w-full px-4 py-2.5 border rounded-xl bg-background text-text focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all appearance-none cursor-pointer';
 
     const stateStyles = error
       ? 'border-error focus:ring-error focus:border-error'
-      : 'border-border focus:ring-primary focus:border-primary';
+      : 'border-border focus:ring-primary focus:border-primary hover:border-primary/50';
 
     const combinedClassName = `${baseStyles} ${stateStyles} ${className}`.trim();
 
@@ -39,7 +39,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-sm font-medium text-text mb-1"
+            className="block text-sm font-medium text-text mb-2"
           >
             {label}
           </label>
@@ -62,9 +62,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
             <svg
-              className="h-5 w-5 text-text-secondary"
+              className="h-4 w-4 text-text-secondary"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"

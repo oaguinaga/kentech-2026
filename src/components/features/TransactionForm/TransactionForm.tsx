@@ -114,12 +114,12 @@ export const TransactionForm = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4"
+      className="space-y-5"
       noValidate
     >
       {submitError && (
         <div
-          className="p-3 bg-error/10 border border-error rounded-lg text-sm text-error"
+          className="p-3 bg-error/10 border border-error rounded-xl text-sm text-error"
           role="alert"
         >
           <strong>Error:</strong> {submitError}
@@ -160,7 +160,7 @@ export const TransactionForm = ({
         {...register('date')}
       />
 
-      <div className="flex gap-2 justify-end pt-4">
+      <div className="flex gap-3 justify-end pt-2 border-t border-border mt-6">
         {onCancel && (
           <Button
             type="button"

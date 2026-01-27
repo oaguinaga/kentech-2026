@@ -1,5 +1,5 @@
-import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
+import { forwardRef } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -14,11 +14,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const helperId = helperText ? `${inputId}-helper` : undefined;
 
     const baseStyles =
-      'w-full px-3 py-2 border rounded-lg bg-background text-text placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors';
+      'w-full px-4 py-2.5 border rounded-xl bg-background text-text placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all';
 
     const stateStyles = error
       ? 'border-error focus:ring-error focus:border-error'
-      : 'border-border focus:ring-primary focus:border-primary';
+      : 'border-border focus:ring-primary focus:border-primary hover:border-primary/50';
 
     const combinedClassName = `${baseStyles} ${stateStyles} ${className}`.trim();
 
@@ -27,7 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-text mb-1"
+            className="block text-sm font-medium text-text mb-2"
           >
             {label}
           </label>

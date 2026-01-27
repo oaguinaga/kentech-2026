@@ -74,12 +74,12 @@ export const Dialog = ({
       aria-labelledby={title ? 'dialog-title' : undefined}
     >
       <div
-        className={`relative bg-background rounded-lg shadow-xl ${sizeStyles[size]} w-full mx-auto my-8 max-h-[90vh] flex flex-col`}
+        className={`relative bg-background rounded-2xl shadow-2xl ${sizeStyles[size]} w-full mx-auto my-8 max-h-[90vh] flex flex-col border border-border`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || onClose) && (
-          <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             {title && (
               <h2
                 id="dialog-title"
@@ -91,11 +91,11 @@ export const Dialog = ({
             {onClose && (
               <button
                 onClick={onClose}
-                className="ml-auto text-text-secondary hover:text-text focus:outline-none focus:ring-2 focus:ring-primary rounded p-1"
+                className="ml-auto p-1.5 rounded-lg text-text-secondary hover:text-text hover:bg-background-secondary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 aria-label="Close dialog"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -113,11 +113,11 @@ export const Dialog = ({
         )}
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto flex-1">{children}</div>
+        <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="p-4 border-t border-border flex items-center justify-end gap-2">
+          <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-2">
             {footer}
           </div>
         )}

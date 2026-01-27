@@ -5,7 +5,7 @@ export { TransactionList } from './TransactionList';
 export type { TransactionListProps } from './TransactionList';
 export { TransactionFilters } from './TransactionFilters';
 export { CsvActions } from './CsvActions';
-export { UndoButton } from './UndoButton';
+export { UndoToast } from './UndoToast';
 export { CurrencySelector } from './CurrencySelector';
 export { DevPanel } from './DevPanel';
 

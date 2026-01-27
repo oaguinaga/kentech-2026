@@ -46,10 +46,10 @@ export const DevPanel = () => {
   };
 
   return (
-    <div ref={panelRef} className="fixed bottom-6 right-6 z-50">
+    <div ref={panelRef} className="fixed bottom-6 left-6 z-50">
       {/* Floating Panel */}
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-3 bg-background-secondary border border-border rounded-lg shadow-xl p-4 min-w-56">
+        <div className="absolute bottom-full left-0 mb-3 bg-background-secondary border border-border rounded-lg shadow-xl p-4 min-w-56">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-text">Dev Tools</h3>
             <button

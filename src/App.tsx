@@ -6,7 +6,7 @@ import {
   TransactionFilters,
   TransactionForm,
   TransactionList,
-  UndoButton,
+  UndoToast,
 } from '@/components/features';
 import { Dialog, ErrorBoundary } from '@/components/ui';
 import { useDarkMode } from '@/hooks';
@@ -92,8 +92,9 @@ function App() {
                 <CurrencySelector />
                 <button
                   onClick={toggle}
-                  className="p-2 rounded-lg hover:bg-background-secondary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                  className="p-2 rounded-xl hover:bg-background-secondary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                   aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                  title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 >
                   {isDark ? (
                     <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-text" />
@@ -142,8 +143,10 @@ function App() {
           {/* Secondary Actions */}
           <div className="mb-4 flex items-center justify-end gap-2">
             <CsvActions />
-            <UndoButton />
           </div>
+
+          {/* Undo Toast */}
+          <UndoToast />
 
           {/* Filters */}
           <TransactionFilters />
