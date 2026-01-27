@@ -2,6 +2,7 @@ import {
   AccountOverview,
   CsvActions,
   CurrencySelector,
+  DevPanel,
   TransactionFilters,
   TransactionForm,
   TransactionList,
@@ -176,6 +177,9 @@ function App() {
             />
           )}
         </Dialog>
+
+        {/* Dev Panel */}
+        <DevPanel />
       </div>
     </ErrorBoundary>
   );

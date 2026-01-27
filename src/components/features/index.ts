@@ -7,4 +7,5 @@ export { TransactionFilters } from './TransactionFilters';
 export { CsvActions } from './CsvActions';
 export { UndoButton } from './UndoButton';
 export { CurrencySelector } from './CurrencySelector';
+export { DevPanel } from './DevPanel';
 
