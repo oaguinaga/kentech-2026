@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useBankingStore } from '@/store';
 import { Button } from '@/components/ui';
 import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
@@ -9,18 +10,68 @@ export interface TransactionListProps {
   onReuse?: (transaction: Transaction) => void;
 }
 
+const TRANSACTIONS_PER_PAGE = 20;
+
 export const TransactionList = ({
   onEdit,
   onDelete,
   onReuse,
 }: TransactionListProps) => {
-  const transactions = useBankingStore((state) => state.getPaginatedTransactions());
+  // Get raw state values
+  const transactions = useBankingStore((state) => state.transactions);
+  const filters = useBankingStore((state) => state.filters);
   const currentPage = useBankingStore((state) => state.currentPage);
-  const totalPages = useBankingStore((state) => state.getTotalPages());
   const setCurrentPage = useBankingStore((state) => state.setCurrentPage);
-  const filteredCount = useBankingStore((state) => state.getFilteredTransactions().length);
 
-  if (transactions.length === 0) {
+  // Compute filtered and paginated transactions in the component
+  const filteredTransactions = useMemo(() => {
+    let filtered = [...transactions];
+
+    // Filter by date range
+    if (filters.dateFrom) {
+      filtered = filtered.filter((t) => t.date >= filters.dateFrom!);
+    }
+    if (filters.dateTo) {
+      filtered = filtered.filter((t) => t.date <= filters.dateTo!);
+    }
+
+    // Filter by description (case-insensitive)
+    if (filters.description.trim()) {
+      const searchTerm = filters.description.toLowerCase().trim();
+      filtered = filtered.filter((t) =>
+        t.description.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filter by type
+    if (filters.type !== 'All') {
+      filtered = filtered.filter((t) => t.type === filters.type);
+    }
+
+    // Sort by date (newest first), then by createdAt for same date
+    filtered.sort((a, b) => {
+      if (a.date !== b.date) {
+        return b.date.localeCompare(a.date); // Newest first
+      }
+      return b.createdAt - a.createdAt; // Newest first for same date
+    });
+
+    return filtered;
+  }, [transactions, filters]);
+
+  const paginatedTransactions = useMemo(() => {
+    const startIndex = (currentPage - 1) * TRANSACTIONS_PER_PAGE;
+    const endIndex = startIndex + TRANSACTIONS_PER_PAGE;
+    return filteredTransactions.slice(startIndex, endIndex);
+  }, [filteredTransactions, currentPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredTransactions.length / TRANSACTIONS_PER_PAGE) || 1;
+  }, [filteredTransactions.length]);
+
+  const filteredCount = filteredTransactions.length;
+
+  if (paginatedTransactions.length === 0) {
     return (
       <div className="text-center py-12">
         <svg
@@ -84,7 +135,7 @@ export const TransactionList = ({
             </tr>
           </thead>
           <tbody className="bg-background divide-y divide-border">
-            {transactions.map((transaction) => (
+            {paginatedTransactions.map((transaction) => (
               <tr
                 key={transaction.id}
                 className="hover:bg-background-secondary"

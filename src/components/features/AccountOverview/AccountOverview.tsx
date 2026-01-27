@@ -1,10 +1,28 @@
+import { useMemo } from 'react';
 import { useBankingStore } from '@/store';
 import { formatCurrency } from '@/utils';
 
 export const AccountOverview = () => {
-  const balance = useBankingStore((state) => state.getBalance());
-  const totalIncome = useBankingStore((state) => state.getTotalIncome());
-  const totalExpenses = useBankingStore((state) => state.getTotalExpenses());
+  const transactions = useBankingStore((state) => state.transactions);
+
+  // Compute values in component to avoid infinite loops
+  const balance = useMemo(() => {
+    return transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  }, [transactions]);
+
+  const totalIncome = useMemo(() => {
+    return transactions
+      .filter((t) => t.amount > 0)
+      .reduce((sum, transaction) => sum + transaction.amount, 0);
+  }, [transactions]);
+
+  const totalExpenses = useMemo(() => {
+    return Math.abs(
+      transactions
+        .filter((t) => t.amount < 0)
+        .reduce((sum, transaction) => sum + transaction.amount, 0)
+    );
+  }, [transactions]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

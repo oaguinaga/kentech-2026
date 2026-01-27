@@ -34,6 +34,7 @@ export interface TransactionFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   defaultType?: TransactionType;
+  reuseTransaction?: Transaction; // For pre-filling form without editing
 }
 
 export const TransactionForm = ({
@@ -41,11 +42,15 @@ export const TransactionForm = ({
   onSuccess,
   onCancel,
   defaultType = 'Deposit',
+  reuseTransaction,
 }: TransactionFormProps) => {
   const addTransaction = useBankingStore((state) => state.addTransaction);
   const updateTransaction = useBankingStore((state) => state.updateTransaction);
   const getBalance = useBankingStore((state) => state.getBalance);
-  const isEditMode = !!transaction;
+  const isEditMode = !!transaction && !reuseTransaction;
+  
+  // Use reuseTransaction for initial values if provided, otherwise use transaction
+  const initialTransaction = reuseTransaction || transaction;
 
   const {
     register,
@@ -57,27 +62,27 @@ export const TransactionForm = ({
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      amount: transaction ? Math.abs(transaction.amount) : undefined,
-      description: transaction?.description || '',
-      date: transaction?.date || getTodayDateString(),
-      type: transaction?.type || defaultType,
+      amount: initialTransaction ? Math.abs(initialTransaction.amount) : undefined,
+      description: initialTransaction?.description || '',
+      date: initialTransaction?.date || getTodayDateString(),
+      type: initialTransaction?.type || defaultType,
     },
   });
 
   const type = watch('type');
   const amount = watch('amount');
 
-  // Update amount sign when type changes
+  // Update amount sign when type changes (only if sign doesn't match)
   useEffect(() => {
-    if (amount !== undefined && amount !== null) {
+    if (amount !== undefined && amount !== null && amount !== 0) {
       const currentAmount = amount;
       if (type === 'Deposit' && currentAmount < 0) {
-        setValue('amount', Math.abs(currentAmount));
+        setValue('amount', Math.abs(currentAmount), { shouldValidate: false });
       } else if (type === 'Withdrawal' && currentAmount > 0) {
-        setValue('amount', -Math.abs(currentAmount));
+        setValue('amount', -Math.abs(currentAmount), { shouldValidate: false });
       }
     }
-  }, [type, setValue, amount]);
+  }, [type, setValue]);
 
   const onSubmit = async (data: TransactionFormData) => {
     try {

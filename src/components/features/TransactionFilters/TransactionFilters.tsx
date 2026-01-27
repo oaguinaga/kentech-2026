@@ -1,20 +1,29 @@
-import { useBankingStore } from '@/store';
-import { Input, DateInput, Select, Button } from '@/components/ui';
+import { Button, DateInput, Input, Select } from '@/components/ui';
 import { useDebounce } from '@/hooks';
-import { useState, useEffect } from 'react';
+import { useBankingStore } from '@/store';
+import { useCallback, useEffect, useState } from 'react';
 
 export const TransactionFilters = () => {
   const filters = useBankingStore((state) => state.filters);
   const setFilters = useBankingStore((state) => state.setFilters);
   const clearFilters = useBankingStore((state) => state.clearFilters);
 
+  // Local state for immediate input updates (not debounced)
   const [descriptionInput, setDescriptionInput] = useState(filters.description);
   const debouncedDescription = useDebounce(descriptionInput, 300);
 
   // Update store when debounced description changes
   useEffect(() => {
-    setFilters({ description: debouncedDescription });
-  }, [debouncedDescription, setFilters]);
+    if (debouncedDescription !== filters.description) {
+      setFilters({ description: debouncedDescription });
+    }
+  }, [debouncedDescription, filters.description, setFilters]);
+
+  // Handle clear filters - reset local state too
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+    setDescriptionInput('');
+  }, [clearFilters]);
 
   const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ dateFrom: e.target.value || null });
@@ -73,7 +82,7 @@ export const TransactionFilters = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={clearFilters}
+            onClick={handleClearFilters}
           >
             Clear Filters
           </Button>
@@ -82,4 +91,3 @@ export const TransactionFilters = () => {
     </div>
   );
 };
-
