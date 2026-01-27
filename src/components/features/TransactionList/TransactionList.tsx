@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useBankingStore } from '@/store';
 import { Button } from '@/components/ui';
 import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
+import { useCurrencyConversion } from '@/hooks';
 import type { Transaction } from '@/types';
 
 export interface TransactionListProps {
@@ -22,6 +23,7 @@ export const TransactionList = ({
   const filters = useBankingStore((state) => state.filters);
   const currentPage = useBankingStore((state) => state.currentPage);
   const setCurrentPage = useBankingStore((state) => state.setCurrentPage);
+  const { selectedCurrency, convert } = useCurrencyConversion();
 
   // Compute filtered and paginated transactions in the component
   const filteredTransactions = useMemo(() => {
@@ -148,7 +150,7 @@ export const TransactionList = ({
                   {transaction.type}
                 </td>
                 <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium text-right ${getAmountColorClass(transaction.amount)}`}>
-                  {formatCurrency(transaction.amount)}
+                  {formatCurrency(convert(transaction.amount), selectedCurrency)}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">

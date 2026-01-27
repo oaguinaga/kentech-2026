@@ -1,6 +1,7 @@
 import {
   AccountOverview,
   CsvActions,
+  CurrencySelector,
   TransactionFilters,
   TransactionForm,
   TransactionList,
@@ -71,6 +72,7 @@ function App() {
             <div className="flex items-center justify-between h-16">
               <h1 className="text-2xl font-bold text-text">Banking Dashboard</h1>
               <div className="flex items-center gap-4">
+                <CurrencySelector />
                 <button
                   onClick={toggle}
                   className="p-2 rounded-lg hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"

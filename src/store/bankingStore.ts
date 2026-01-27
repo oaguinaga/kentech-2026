@@ -1,3 +1,4 @@
+import type { CurrencyCode } from '@/hooks';
 import type { Transaction, TransactionType } from '@/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -22,6 +23,7 @@ interface BankingState {
   lastAddedTransaction: Transaction | null;
   filters: TransactionFilters;
   currentPage: number;
+  selectedCurrency: CurrencyCode;
 
   // Actions
   addTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
@@ -35,6 +37,7 @@ interface BankingState {
   clearUndo: () => void;
   importTransactions: (transactions: Transaction[]) => void;
   resetStore: () => void;
+  setSelectedCurrency: (currency: CurrencyCode) => void;
 
   // Computed selectors (getters)
   getBalance: () => number;
@@ -58,6 +61,7 @@ const initialState = {
     type: 'All' as const,
   },
   currentPage: 1,
+  selectedCurrency: 'EUR' as CurrencyCode,
 };
 
 /**
@@ -251,6 +255,11 @@ export const useBankingStore = create<BankingState>()(
         set(initialState);
       },
 
+      // Set selected currency
+      setSelectedCurrency: (currency) => {
+        set({ selectedCurrency: currency });
+      },
+
       // Computed: Get current balance
       getBalance: () => {
         return calculateBalance(get().transactions);
@@ -291,8 +300,9 @@ export const useBankingStore = create<BankingState>()(
     {
       name: 'banking-storage',
       partialize: (state) => ({
-        // Only persist transactions, not filters, page, or undo state
+        // Only persist transactions and selected currency, not filters, page, or undo state
         transactions: state.transactions,
+        selectedCurrency: state.selectedCurrency,
       }),
     }
   )

@@ -6,4 +6,5 @@ export type { TransactionListProps } from './TransactionList';
 export { TransactionFilters } from './TransactionFilters';
 export { CsvActions } from './CsvActions';
 export { UndoButton } from './UndoButton';
+export { CurrencySelector } from './CurrencySelector';
 
