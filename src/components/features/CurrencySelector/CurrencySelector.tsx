@@ -41,7 +41,7 @@ export const CurrencySelector = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 bg-background-secondary border border-border rounded-lg shadow-lg z-50 min-w-[120px]">
+        <div className="absolute right-0 mt-1 bg-background-secondary border border-border rounded-lg shadow-lg z-dropdown min-w-[120px]">
           <div className="py-1">
             {currencyOptions.map((option) => (
               <button

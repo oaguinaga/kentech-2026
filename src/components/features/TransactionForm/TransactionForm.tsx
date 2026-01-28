@@ -1,16 +1,31 @@
+import { Button, DateInput, Input, Select } from '@/components/ui';
+import { useBankingStore } from '@/store';
+import type { Transaction, TransactionType } from '@/types';
+import { formatCurrency as formatCurrencyUtil, getTodayDateString } from '@/utils';
+import { parseLocalIsoDate } from '@/utils/date';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useBankingStore } from '@/store';
-import { Button, Input, Select, DateInput } from '@/components/ui';
-import { getTodayDateString, formatCurrency as formatCurrencyUtil } from '@/utils';
-import type { Transaction, TransactionType } from '@/types';
 
 const transactionSchema = z.object({
   amount: z.number().min(0.01, 'Amount must be greater than 0'),
-  description: z.string().min(1, 'Description is required').max(200, 'Description must be 200 characters or less'),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(200, 'Description must be 200 characters or less'),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format')
+    .refine((value) => {
+      const date = parseLocalIsoDate(value);
+      if (!date) return false;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return date.getTime() <= today.getTime();
+    }, 'Transaction date cannot be in the future'),
   type: z.enum(['Deposit', 'Withdrawal']),
 });
 

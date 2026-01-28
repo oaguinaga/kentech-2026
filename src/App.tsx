@@ -84,7 +84,7 @@ function App() {
     <ErrorBoundary>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-background border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-background/95">
+        <header className="bg-background border-b border-border sticky top-0 z-header backdrop-blur-sm bg-background/95">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
               <h1 className="text-xl sm:text-2xl font-bold text-text">Banking</h1>
