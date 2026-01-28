@@ -68,7 +68,7 @@ export const Dialog = ({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 m-0 w-screen h-screen max-w-none max-h-none bg-transparent p-4"
+      className="fixed inset-0 z-modal m-0 w-screen h-screen max-w-none max-h-none bg-transparent p-4"
       onClick={handleBackdropClick}
       aria-modal="true"
       aria-labelledby={title ? 'dialog-title' : undefined}

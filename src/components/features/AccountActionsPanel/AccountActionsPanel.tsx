@@ -1,14 +1,15 @@
 import { useState, useRef, useCallback } from 'react';
-import { MoreVertical, X, Upload, Download } from 'lucide-react';
+import { CheckCircle2, Download, MoreVertical, Upload, X } from 'lucide-react';
 import { useBankingStore } from '@/store';
 import { parseCsvFile, transactionsToCsv, downloadCsv } from '@/utils';
 import type { Transaction } from '@/types';
 import { useOnClickOutside } from '@/hooks';
+import { Toast } from '@/components/ui';
 
 export const AccountActionsPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [importError, setImportError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ message: string; variant: 'success' | 'error' } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const transactions = useBankingStore((state) => state.transactions);
@@ -25,9 +26,16 @@ export const AccountActionsPanel = () => {
       const csvContent = transactionsToCsv(transactions);
       downloadCsv(csvContent, 'transactions.csv');
       setIsOpen(false);
+      setToastMessage({
+        message: `Successfully exported ${transactions.length} transaction(s).`,
+        variant: 'success',
+      });
     } catch (error) {
       console.error('Error exporting CSV:', error);
-      setImportError('Failed to export transactions. Please try again.');
+      setToastMessage({
+        message: 'Failed to export transactions. Please try again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -36,7 +44,7 @@ export const AccountActionsPanel = () => {
     if (!file) return;
 
     setIsImporting(true);
-    setImportError(null);
+    setToastMessage(null);
 
     try {
       if (!file.name.endsWith('.csv')) {
@@ -55,12 +63,18 @@ export const AccountActionsPanel = () => {
         fileInputRef.current.value = '';
       }
 
-      alert(`Successfully imported ${importedTransactions.length} transaction(s).`);
       setIsOpen(false);
+      setToastMessage({
+        message: `Successfully imported ${importedTransactions.length} transaction(s).`,
+        variant: 'success',
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to import CSV file. Please check the format and try again.';
-      setImportError(errorMessage);
+      setToastMessage({
+        message: errorMessage,
+        variant: 'error',
+      });
       console.error('CSV import error:', error);
     } finally {
       setIsImporting(false);
@@ -90,7 +104,7 @@ export const AccountActionsPanel = () => {
 
       {/* Floating Panel */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-3 bg-background-secondary border border-border rounded-xl shadow-xl p-4 min-w-[200px] z-50">
+        <div className="absolute top-full right-0 mt-3 bg-background-secondary border border-border rounded-xl shadow-xl p-4 min-w-[200px] z-panel">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-text">Account Actions</h3>
             <button
@@ -133,21 +147,32 @@ export const AccountActionsPanel = () => {
             </button>
           </div>
 
-          {importError && (
-            <div className="mt-3 pt-3 border-t border-border">
-              <div className="p-2 bg-error/10 border border-error rounded-lg text-xs text-error">
-                <strong>Error:</strong> {importError}
-                <button
-                  onClick={() => setImportError(null)}
-                  className="ml-2 text-error hover:opacity-75"
-                  aria-label="Dismiss error"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+      )}
+
+      {/* Toast Notifications */}
+      {toastMessage && (
+        <Toast
+          duration={toastMessage.variant === 'error' ? 8000 : 6000}
+          onDismiss={() => setToastMessage(null)}
+          variant={toastMessage.variant}
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              {toastMessage.variant === 'success' ? (
+                <CheckCircle2 className="w-5 h-5 text-success" />
+              ) : (
+                <X className="w-5 h-5 text-error" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-text">
+                {toastMessage.variant === 'success' ? 'Success' : 'Error'}
+              </p>
+              <p className="text-xs text-text-secondary">{toastMessage.message}</p>
+            </div>
+          </div>
+        </Toast>
       )}
     </div>
   );

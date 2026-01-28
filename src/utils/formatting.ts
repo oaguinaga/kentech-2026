@@ -1,5 +1,5 @@
+import { DEFAULT_CURRENCY, getCurrencySymbol } from '@/constants';
 import { format, parseISO } from 'date-fns';
-import { getCurrencySymbol, DEFAULT_CURRENCY } from '@/constants';
 
 /**
  * Format currency amount with symbol
@@ -14,24 +14,13 @@ export function formatCurrency(
 }
 
 /**
- * Format currency with sign (positive/negative indicator)
- */
-export function formatCurrencyWithSign(
-  amount: number,
-  currency: string = DEFAULT_CURRENCY
-): string {
-  const sign = amount >= 0 ? '+' : '';
-  return `${sign}${formatCurrency(amount, currency)}`;
-}
-
-/**
  * Format date from YYYY-MM-DD to display format
  */
 export function formatDate(dateString: string, formatStr: string = 'MMM dd, yyyy'): string {
   try {
     const date = parseISO(dateString);
     return format(date, formatStr);
-  } catch (error) {
+  } catch {
     // Fallback to original string if parsing fails
     return dateString;
   }

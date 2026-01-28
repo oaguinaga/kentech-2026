@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface ToastProps {
   children: React.ReactNode;
@@ -39,14 +40,14 @@ export const Toast = ({
 
   const variantStyles = {
     default: 'bg-background-secondary border-border',
-    success: 'bg-success/10 border-success/30',
-    error: 'bg-error/10 border-error/30',
-    info: 'bg-primary/10 border-primary/30',
+    success: 'bg-success-surface border-success/30',
+    error: 'bg-error-surface border-error/30',
+    info: 'bg-info-surface border-primary/30',
   };
 
-  return (
+  const toastContent = (
     <div
-      className={`fixed bottom-6 right-6 z-40 transition-all duration-200 ${
+      className={`fixed bottom-6 right-6 z-toast transition-all duration-200 ${
         !isExiting
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-2 pointer-events-none'
@@ -70,5 +71,12 @@ export const Toast = ({
       </div>
     </div>
   );
+
+  // Render toast in a portal at document root to avoid stacking context issues
+  if (typeof document !== 'undefined') {
+    return createPortal(toastContent, document.body);
+  }
+
+  return toastContent;
 };
 

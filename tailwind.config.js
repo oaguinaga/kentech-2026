@@ -19,6 +19,22 @@ export default {
         expense: 'hsl(var(--color-expense))',
         error: 'hsl(var(--color-error))',
         success: 'hsl(var(--color-success))',
+        'success-surface': 'hsl(var(--color-success-surface))',
+        'error-surface': 'hsl(var(--color-error-surface))',
+        'info-surface': 'hsl(var(--color-info-surface))',
+      },
+      zIndex: {
+        // Z-index scale for consistent layering
+        // Use semantic names to prevent conflicts
+        base: '0',
+        dropdown: '10',
+        sticky: '20',
+        overlay: '30',
+        header: '40',
+        panel: '50',
+        modal: '60',
+        toast: '70',
+        tooltip: '80',
       },
     },
   },

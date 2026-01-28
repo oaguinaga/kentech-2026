@@ -20,6 +20,11 @@
   /* Status colors */
   --color-error: 0 84% 60%; /* Red for errors */
   --color-success: 142 71% 45%; /* Green for success */
+  
+  /* Status surface colors (for backgrounds) */
+  --color-success-surface: 142 71% 96%; /* Very light green */
+  --color-error-surface: 0 84% 96%; /* Very light red */
+  --color-info-surface: 220 90% 96%; /* Very light blue */
 }
 
 [data-theme="dark"],
@@ -43,4 +48,9 @@ html[data-theme="dark"] {
   /* Status colors */
   --color-error: 0 75% 55%;
   --color-success: 142 65% 50%;
+  
+  /* Status surface colors (for backgrounds) */
+  --color-success-surface: 142 65% 18%; /* Dark green surface */
+  --color-error-surface: 0 75% 20%; /* Dark red surface */
+  --color-info-surface: 220 90% 20%; /* Dark blue surface */
 }
