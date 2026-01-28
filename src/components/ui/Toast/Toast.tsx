@@ -2,13 +2,13 @@ import { X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export interface ToastProps {
+export type ToastProps = {
   children: React.ReactNode;
   duration?: number; // in milliseconds, 0 means no auto-dismiss
   onDismiss?: () => void;
   variant?: 'default' | 'success' | 'error' | 'info';
   showCloseButton?: boolean;
-}
+};
 
 export const Toast = ({
   children,

@@ -1,4 +1,4 @@
-# Banking Dashboard (Kentech Challenge)
+# 🏦 Banking Dashboard (Kentech Challenge)
 
 A small banking dashboard built for a senior frontend technical assessment. It focuses on **clear architecture**, **type-safety**, and a **polished, mobile-first UX**.
 

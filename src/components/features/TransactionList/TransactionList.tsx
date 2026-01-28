@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { PaginationControls } from './PaginationControls';
 import { TransactionListItem } from './TransactionListItem';
 
-export interface TransactionListProps {
+export type TransactionListProps = {
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
   onReuse?: (transaction: Transaction) => void;
-}
+};
 
 const TRANSACTIONS_PER_PAGE = 20;
 

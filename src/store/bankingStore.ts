@@ -6,17 +6,17 @@ import { persist } from 'zustand/middleware';
 /**
  * Filter state for transactions
  */
-export interface TransactionFilters {
+export type TransactionFilters = {
   dateFrom: string | null;
   dateTo: string | null;
   description: string;
   type: 'All' | TransactionType;
-}
+};
 
 /**
  * Banking store state and actions
  */
-interface BankingState {
+type BankingState = {
   // State
   transactions: Transaction[];
   lastDeletedTransaction: Transaction | null;
@@ -48,7 +48,7 @@ interface BankingState {
   getFilteredTransactions: () => Transaction[];
   getPaginatedTransactions: () => Transaction[];
   getTotalPages: () => number;
-}
+};
 
 const TRANSACTIONS_PER_PAGE = 20;
 

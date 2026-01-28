@@ -32,7 +32,7 @@ describe('parseCsvFile', () => {
       { Date: '2024-01-16', Amount: '-50.25', Description: 'Grocery', Type: 'Withdrawal' },
     ];
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.complete({ data: mockData, errors: [], meta: {} });
     });
 
@@ -63,7 +63,7 @@ describe('parseCsvFile', () => {
       { Date: '2024-01-15', Amount: '100.50', Description: 'Salary' }, // Missing Type
     ];
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.complete({ data: mockData, errors: [], meta: {} });
     });
 
@@ -78,7 +78,7 @@ describe('parseCsvFile', () => {
       { Date: '01/15/2024', Amount: '100.50', Description: 'Salary', Type: 'Deposit' },
     ];
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.complete({ data: mockData, errors: [], meta: {} });
     });
 
@@ -179,7 +179,7 @@ describe('parseCsvFile', () => {
     const Papa = (await import('papaparse')).default;
     const mockFile = new File([''], 'test.csv', { type: 'text/csv' });
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.complete({ data: [], errors: [], meta: {} });
     });
 
@@ -190,7 +190,7 @@ describe('parseCsvFile', () => {
     const Papa = (await import('papaparse')).default;
     const mockFile = new File([''], 'test.csv', { type: 'text/csv' });
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.error({ message: 'Parse error', type: 'Quotes', code: 'MissingQuotes', row: 1 });
     });
 
@@ -205,7 +205,7 @@ describe('parseCsvFile', () => {
       { Date: '2024-01-15', Amount: '100.50', Description: '  Salary  ', Type: 'Deposit' },
     ];
 
-    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((file, options) => {
+    (Papa.parse as ReturnType<typeof vi.fn>).mockImplementation((_file, options) => {
       options.complete({ data: mockData, errors: [], meta: {} });
     });
 

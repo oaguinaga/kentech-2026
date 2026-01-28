@@ -3,9 +3,9 @@
  * Alternative: Can be swapped with other APIs like fixer.io, exchangerate-api.com, etc.
  */
 
-export interface ExchangeRates {
+export type ExchangeRates = {
   [currency: string]: number;
-}
+};
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const CACHE_KEY = 'exchange-rates-cache';
@@ -114,14 +114,3 @@ export function convertCurrency(
   
   return amountEUR * rate;
 }
-
-/**
- * Get exchange rate for a currency
- */
-export function getExchangeRate(currency: string, rates: ExchangeRates): number {
-  if (currency === 'EUR') {
-    return 1;
-  }
-  return rates[currency] ?? 1;
-}
-

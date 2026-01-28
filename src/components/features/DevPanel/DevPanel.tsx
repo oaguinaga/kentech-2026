@@ -1,12 +1,14 @@
-import { Button } from '@/components/ui';
+import { Button, Dialog, Toast } from '@/components/ui';
 import { seedTransactions } from '@/data';
 import { useOnClickOutside } from '@/hooks';
 import { useBankingStore } from '@/store';
-import { Bug, Database, Trash2, X } from 'lucide-react';
+import { Bug, CheckCircle2, Database, Trash2, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 export const DevPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<{ message: string; variant: 'success' | 'error' } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const addTransaction = useBankingStore((state) => state.addTransaction);
   const resetStore = useBankingStore((state) => state.resetStore);
@@ -24,19 +26,30 @@ export const DevPanel = () => {
   }
 
   const handleClearAll = () => {
-    if (
-      window.confirm(
-        'Are you sure you want to clear all data? This action cannot be undone.'
-      )
-    ) {
-      resetStore();
-      setIsOpen(false);
-    }
+    setIsClearDialogOpen(true);
+    setIsOpen(false);
+  };
+
+  const handleClearConfirm = () => {
+    resetStore();
+    setIsClearDialogOpen(false);
+    setToastMessage({
+      message: 'All data has been cleared.',
+      variant: 'success',
+    });
+  };
+
+  const handleClearCancel = () => {
+    setIsClearDialogOpen(false);
   };
 
   const handleSeedData = () => {
     const count = seedTransactions(addTransaction);
-    alert(`Seeded ${count} sample transactions`);
+    setIsOpen(false);
+    setToastMessage({
+      message: `Seeded ${count} sample transaction${count !== 1 ? 's' : ''}.`,
+      variant: 'success',
+    });
   };
 
 
@@ -103,6 +116,59 @@ export const DevPanel = () => {
       >
         <Bug className="w-5 h-5" />
       </button>
+
+      {/* Toast Notifications */}
+      {toastMessage && (
+        <Toast
+          duration={toastMessage.variant === 'error' ? 8000 : 6000}
+          onDismiss={() => setToastMessage(null)}
+          variant={toastMessage.variant}
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              {toastMessage.variant === 'success' ? (
+                <CheckCircle2 className="w-5 h-5 text-success" />
+              ) : (
+                <X className="w-5 h-5 text-error" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-text">
+                {toastMessage.variant === 'success' ? 'Success' : 'Error'}
+              </p>
+              <p className="text-xs text-text-secondary">{toastMessage.message}</p>
+            </div>
+          </div>
+        </Toast>
+      )}
+
+      {/* Clear All Confirmation Dialog */}
+      <Dialog
+        isOpen={isClearDialogOpen}
+        onClose={handleClearCancel}
+        title="Clear All Data"
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={handleClearCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleClearConfirm}
+            >
+              Clear All
+            </Button>
+          </>
+        }
+      >
+        <p className="text-text">
+          Are you sure you want to clear all data? This action cannot be undone.
+        </p>
+      </Dialog>
     </div>
   );
 };

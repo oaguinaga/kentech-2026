@@ -1,15 +1,16 @@
 import type { InputHTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   error?: string;
   helperText?: string;
-}
+};
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, className = '', id, ...props }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substring(7)}`;
+    const reactId = useId();
+    const inputId = id ?? `input-${reactId}`;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText ? `${inputId}-helper` : undefined;
 

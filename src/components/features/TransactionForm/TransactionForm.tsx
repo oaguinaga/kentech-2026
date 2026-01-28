@@ -31,13 +31,13 @@ const transactionSchema = z.object({
 
 type TransactionFormData = z.infer<typeof transactionSchema>;
 
-export interface TransactionFormProps {
+export type TransactionFormProps = {
   transaction?: Transaction;
   onSuccess?: () => void;
   onCancel?: () => void;
   defaultType?: TransactionType;
   reuseTransaction?: Transaction; // For pre-filling form without editing
-}
+};
 
 export const TransactionForm = ({
   transaction,
@@ -175,7 +175,7 @@ export const TransactionForm = ({
         {...register('date')}
       />
 
-      <div className="flex gap-3 justify-end pt-2 border-t border-border mt-6">
+      <div className="flex gap-3 justify-end pt-2 mt-6">
         {onCancel && (
           <Button
             type="button"

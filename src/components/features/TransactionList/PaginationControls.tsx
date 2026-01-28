@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui';
 
-export interface PaginationControlsProps {
+export type PaginationControlsProps = {
   currentPage: number;
   totalPages: number;
   filteredCount: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-}
+};
 
 export const PaginationControls = ({
   currentPage,

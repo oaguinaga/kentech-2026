@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type CurrencyCode = 'EUR' | 'USD' | 'GBP' | 'KES';
 
-export interface UseCurrencyConversionReturn {
+export type UseCurrencyConversionReturn = {
   selectedCurrency: CurrencyCode;
   setSelectedCurrency: (currency: CurrencyCode) => void;
   rates: ExchangeRates | null;
@@ -13,7 +13,7 @@ export interface UseCurrencyConversionReturn {
   error: string | null;
   convert: (amountEUR: number) => number;
   refreshRates: () => Promise<void>;
-}
+};
 
 /**
  * Hook to manage currency conversion

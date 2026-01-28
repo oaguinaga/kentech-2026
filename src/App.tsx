@@ -8,7 +8,7 @@ import {
   TransactionList,
   UndoToast,
 } from '@/components/features';
-import { Dialog, ErrorBoundary } from '@/components/ui';
+import { Button, Dialog, ErrorBoundary } from '@/components/ui';
 import { useDarkMode } from '@/hooks';
 import { useBankingStore } from '@/store';
 import type { Transaction } from '@/types';
@@ -18,7 +18,9 @@ import { useState } from 'react';
 function App() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
+  const [transactionToDelete, setTransactionToDelete] = useState<Transaction | undefined>();
   const [reuseTransaction, setReuseTransaction] = useState<Transaction | undefined>();
   const [defaultTransactionType, setDefaultTransactionType] = useState<'Deposit' | 'Withdrawal' | undefined>();
 
@@ -48,9 +50,21 @@ function App() {
   };
 
   const handleDelete = (transaction: Transaction) => {
-    if (window.confirm(`Are you sure you want to delete "${transaction.description}"?`)) {
-      deleteTransaction(transaction.id);
+    setTransactionToDelete(transaction);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (transactionToDelete) {
+      deleteTransaction(transactionToDelete.id);
+      setIsDeleteDialogOpen(false);
+      setTransactionToDelete(undefined);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setTransactionToDelete(undefined);
   };
 
   const handleReuse = (transaction: Transaction) => {
@@ -84,10 +98,10 @@ function App() {
     <ErrorBoundary>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-background border-b border-border sticky top-0 z-header">
+        <header className="bg-background/70 backdrop-blur-md border-b border-border sticky top-0 z-header">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <h1 className="text-xl sm:text-2xl font-bold text-text">Banking</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-text">🏦 KenBank</h1>
               <div className="flex items-center gap-2 sm:gap-3">
                 <CurrencySelector />
                 <button
@@ -119,7 +133,7 @@ function App() {
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={handleAddDeposit}
-                  className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-background hover:bg-background-secondary border border-border shadow-sm hover:shadow-md transition-all"
                   aria-label="Add deposit"
                 >
                   <BanknoteArrowUp className="w-5 h-5 text-text" />
@@ -127,7 +141,7 @@ function App() {
                 </button>
                 <button
                   onClick={handleAddWithdrawal}
-                  className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-background hover:bg-background-secondary border border-border transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-background hover:bg-background-secondary border border-border shadow-sm hover:shadow-md transition-all"
                   aria-label="Add withdrawal"
                 >
                   <BanknoteArrowDown className="w-5 h-5 text-text" />
@@ -135,7 +149,7 @@ function App() {
                 </button>
                 <button
                   onClick={handleAddClick}
-                  className="p-2.5 sm:p-3 rounded-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all"
+                  className="p-2.5 sm:p-3 rounded-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all ring-1 ring-primary/20"
                   aria-label="Add transaction"
                   title="Add transaction"
                 >
@@ -197,6 +211,34 @@ function App() {
               onCancel={handleEditCancel}
             />
           )}
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          isOpen={isDeleteDialogOpen}
+          onClose={handleDeleteCancel}
+          title="Delete Transaction"
+          size="sm"
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                onClick={handleDeleteCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleDeleteConfirm}
+              >
+                Delete
+              </Button>
+            </>
+          }
+        >
+          <p className="text-text">
+            Are you sure you want to delete "{transactionToDelete?.description}"? This action cannot be undone.
+          </p>
         </Dialog>
 
         {/* Dev Panel */}

@@ -1,11 +1,11 @@
 import type { CurrencyCode } from '@/hooks';
 import type { Transaction } from '@/types';
 import { formatCurrency, formatDate, getAmountColorClass } from '@/utils';
-import { ArrowDownCircle, ArrowUpCircle, Copy, Edit2, Trash2 } from 'lucide-react';
+import { BanknoteArrowDown, BanknoteArrowUp, Copy, Edit2, Trash2 } from 'lucide-react';
 
 export type TransactionListItemVariant = 'mobile' | 'desktop';
 
-export interface TransactionListItemProps {
+export type TransactionListItemProps = {
   variant: TransactionListItemVariant;
   transaction: Transaction;
   isBalanceVisible: boolean;
@@ -14,7 +14,7 @@ export interface TransactionListItemProps {
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
   onReuse?: (transaction: Transaction) => void;
-}
+};
 
 export const TransactionListItem = ({
   variant,
@@ -27,7 +27,7 @@ export const TransactionListItem = ({
   onReuse,
 }: TransactionListItemProps) => {
   const isIncome = transaction.amount > 0;
-  const Icon = isIncome ? ArrowDownCircle : ArrowUpCircle;
+  const Icon = isIncome ? BanknoteArrowUp : BanknoteArrowDown;
 
   const amountClasses = `transition-all ${
     isBalanceVisible ? 'blur-0' : 'blur-md select-none'
@@ -73,7 +73,7 @@ export const TransactionListItem = ({
   if (variant === 'mobile') {
     return (
       <div className="bg-background rounded-xl p-4 border border-border hover:border-primary/30 transition-colors">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <div className={`p-2.5 rounded-xl ${isIncome ? 'bg-income/10' : 'bg-expense/10'}`}>
             <Icon className={`w-5 h-5 ${isIncome ? 'text-income' : 'text-expense'}`} />
           </div>

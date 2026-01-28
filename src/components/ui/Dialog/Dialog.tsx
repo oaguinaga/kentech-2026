@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
-export interface DialogProps {
+export type DialogProps = {
   isOpen: boolean;
   onClose?: () => void;
   title?: string;
   children: ReactNode;
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
-}
+};
 
 export const Dialog = ({
   isOpen,
@@ -117,7 +117,7 @@ export const Dialog = ({
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-2">
+          <div className="px-6 py-4 flex items-center justify-end gap-2">
             {footer}
           </div>
         )}

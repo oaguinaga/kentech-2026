@@ -9,14 +9,14 @@
  */
 export type TransactionType = 'Deposit' | 'Withdrawal';
 
-export interface Transaction {
+export type Transaction = {
   id: string;
   date: string; // YYYY-MM-DD format
   createdAt: number; // Date.now() timestamp
   amount: number; // positive for deposits, negative for withdrawals
   description: string;
   type: TransactionType;
-}
+};
 
 /**
  * Type guard to check if an object is a valid Transaction
@@ -43,10 +43,10 @@ export function isTransaction(value: unknown): value is Transaction {
 /**
  * CSV row format for import/export
  */
-export interface CsvTransactionRow {
+export type CsvTransactionRow = {
   Date: string;
   Amount: string;
   Description: string;
   Type: TransactionType;
-}
+};
 

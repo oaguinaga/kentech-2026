@@ -9,6 +9,28 @@
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
   }
+
+  /* Date picker icon styling for dark mode visibility */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+    cursor: pointer;
+  }
+
+  [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+  html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+
+  /* Firefox date picker icon */
+  input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(0);
+    cursor: pointer;
+  }
+
+  [data-theme="dark"] input[type="date"]::-moz-calendar-picker-indicator,
+  html[data-theme="dark"] input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }
 
 @layer base {

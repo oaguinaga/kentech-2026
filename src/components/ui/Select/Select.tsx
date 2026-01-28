@@ -1,12 +1,12 @@
 import type { SelectHTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 
-export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
   error?: string;
   helperText?: string;
   options: Array<{ value: string; label: string }>;
-}
+};
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
@@ -21,7 +21,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     },
     ref
   ) => {
-    const selectId = id || `select-${Math.random().toString(36).substring(7)}`;
+    const reactId = useId();
+    const selectId = id ?? `select-${reactId}`;
     const errorId = error ? `${selectId}-error` : undefined;
     const helperId = helperText ? `${selectId}-helper` : undefined;
 
