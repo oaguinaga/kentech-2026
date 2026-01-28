@@ -111,7 +111,7 @@ export const CsvActions = ({ showLabels = false }: CsvActionsProps) => {
 
       {importError && (
         <div
-          className="absolute top-16 right-4 p-3 bg-error/10 border border-error rounded-lg text-sm text-error max-w-xs z-50"
+          className="absolute top-16 right-4 p-3 bg-error/10 border border-error rounded-lg text-sm text-error max-w-xs z-panel"
           role="alert"
         >
           <strong>Import Error:</strong> {importError}
