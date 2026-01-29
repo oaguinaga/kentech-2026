@@ -1,11 +1,13 @@
 import { Button, DateInput, Input, Select } from '@/components/ui';
+import { DEFAULT_CURRENCY, getCurrencySymbol } from '@/constants';
+import { useCurrencyConversion } from '@/hooks';
 import { useBankingStore } from '@/store';
 import type { Transaction, TransactionType } from '@/types';
 import { formatCurrency as formatCurrencyUtil, getTodayDateString } from '@/utils';
 import { parseLocalIsoDate } from '@/utils/date';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const transactionSchema = z.object({
@@ -49,13 +51,47 @@ export const TransactionForm = ({
   const addTransaction = useBankingStore((state) => state.addTransaction);
   const updateTransaction = useBankingStore((state) => state.updateTransaction);
   const getBalance = useBankingStore((state) => state.getBalance);
+  const { selectedCurrency, convert, rates } = useCurrencyConversion();
   const isEditMode = !!transaction && !reuseTransaction;
   const [submitError, setSubmitError] = useState<string | null>(null);
+  
+  const currencySymbol = getCurrencySymbol(selectedCurrency);
   
   // Use reuseTransaction for initial values if provided, otherwise use transaction
   const initialTransaction = reuseTransaction || transaction;
 
+  // Convert EUR amount to selected currency for display (rounded to 2 decimal places)
+  const convertToSelectedCurrency = useCallback((amountEUR: number): number => {
+    if (!rates || selectedCurrency === DEFAULT_CURRENCY) {
+      return Math.round(amountEUR * 100) / 100; // Round to 2 decimal places
+    }
+    const converted = convert(amountEUR);
+    return Math.round(converted * 100) / 100; // Round to 2 decimal places
+  }, [rates, selectedCurrency, convert]);
+
+  // Convert selected currency amount to EUR for storage
+  const convertToEUR = (amountInSelectedCurrency: number): number => {
+    if (!rates || selectedCurrency === DEFAULT_CURRENCY) {
+      return amountInSelectedCurrency;
+    }
+    const rate = rates[selectedCurrency];
+    if (!rate) {
+      console.warn(`Exchange rate not found for ${selectedCurrency}, using as EUR`);
+      return amountInSelectedCurrency;
+    }
+    // Reverse conversion: divide by rate to get EUR
+    return amountInSelectedCurrency / rate;
+  };
+
+  // Calculate initial amount in selected currency for form display
+  const initialAmountInSelectedCurrency = useMemo(() => {
+    if (!initialTransaction) return undefined;
+    const amountEUR = Math.abs(initialTransaction.amount);
+    return convertToSelectedCurrency(amountEUR);
+  }, [initialTransaction, convertToSelectedCurrency]);
+
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -65,12 +101,23 @@ export const TransactionForm = ({
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      amount: initialTransaction ? Math.abs(initialTransaction.amount) : undefined,
+      amount: initialAmountInSelectedCurrency,
       description: initialTransaction?.description || '',
       date: initialTransaction?.date || getTodayDateString(),
       type: initialTransaction?.type || defaultType,
     },
   });
+
+  // Update form amount when currency or rates change (for edit mode)
+  useEffect(() => {
+    if (initialTransaction && rates) {
+      const amountEUR = Math.abs(initialTransaction.amount);
+      const amountInSelectedCurrency = convertToSelectedCurrency(amountEUR);
+      // Round to 2 decimal places for display
+      const roundedAmount = Math.round(amountInSelectedCurrency * 100) / 100;
+      setValue('amount', roundedAmount, { shouldValidate: false });
+    }
+  }, [selectedCurrency, rates, initialTransaction, setValue, convertToSelectedCurrency]);
 
   const type = watch('type');
   const amount = watch('amount');
@@ -87,14 +134,24 @@ export const TransactionForm = ({
     setSubmitError(null);
     
     try {
+      // Convert amount from selected currency to EUR for storage
+      const amountEUR = convertToEUR(data.amount);
       const currentBalance = getBalance();
-      const transactionAmount = type === 'Deposit' ? data.amount : -data.amount;
+      const transactionAmountEUR = type === 'Deposit' ? amountEUR : -amountEUR;
 
       // Validate withdrawal won't cause negative balance
       if (type === 'Withdrawal') {
-        const newBalance = currentBalance + transactionAmount;
+        // When editing, subtract the original transaction amount first to get the adjusted balance
+        const adjustedBalance = isEditMode && transaction
+          ? currentBalance - transaction.amount  // Remove old transaction from balance
+          : currentBalance;
+        
+        const newBalance = adjustedBalance + transactionAmountEUR;
         if (newBalance < 0) {
-          const errorMessage = `Insufficient balance. Available: ${formatCurrencyUtil(currentBalance)}, Attempted: ${formatCurrencyUtil(Math.abs(transactionAmount))}`;
+          // Convert balance to selected currency for error message
+          const adjustedBalanceInSelectedCurrency = convertToSelectedCurrency(adjustedBalance);
+          const attemptedAmountInSelectedCurrency = convertToSelectedCurrency(Math.abs(transactionAmountEUR));
+          const errorMessage = `Insufficient balance. Available: ${formatCurrencyUtil(adjustedBalanceInSelectedCurrency, selectedCurrency)}, Attempted: ${formatCurrencyUtil(attemptedAmountInSelectedCurrency, selectedCurrency)}`;
           setSubmitError(errorMessage);
           return;
         }
@@ -102,14 +159,14 @@ export const TransactionForm = ({
 
       if (isEditMode && transaction) {
         updateTransaction(transaction.id, {
-          amount: transactionAmount,
+          amount: transactionAmountEUR,
           description: data.description,
           date: data.date,
           type: data.type,
         });
       } else {
         addTransaction({
-          amount: transactionAmount,
+          amount: transactionAmountEUR,
           description: data.description,
           date: data.date,
           type: data.type,
@@ -141,25 +198,32 @@ export const TransactionForm = ({
         </div>
       )}
 
-      <Select
-        label="Type"
-        options={[
-          { value: 'Deposit', label: 'Deposit' },
-          { value: 'Withdrawal', label: 'Withdrawal' },
-        ]}
-        error={errors.type?.message}
-        {...register('type')}
-        onChange={(e) => {
-          setValue('type', e.target.value as TransactionType);
-        }}
+      <Controller
+        name="type"
+        control={control}
+        render={({ field }) => (
+          <Select
+            label="Type"
+            options={[
+              { value: 'Deposit', label: 'Deposit' },
+              { value: 'Withdrawal', label: 'Withdrawal' },
+            ]}
+            error={errors.type?.message}
+            {...field}
+          />
+        )}
       />
 
       <Input
-        label="Amount"
+        label={`Amount (${currencySymbol})`}
         type="number"
         step="0.01"
         error={errors.amount?.message}
-        helperText={type === 'Deposit' ? 'Enter positive amount' : 'Enter positive amount (will be converted to negative)'}
+        helperText={
+          type === 'Deposit'
+            ? `Enter the amount you received in ${selectedCurrency}`
+            : `Enter the amount to withdraw in ${selectedCurrency} (will be stored as negative)`
+        }
         {...register('amount', { valueAsNumber: true })}
       />
 

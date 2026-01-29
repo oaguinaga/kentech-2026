@@ -2,14 +2,17 @@ import { DateInput, Input, Select } from '@/components/ui';
 import { useDebounce } from '@/hooks';
 import { useBankingStore } from '@/store';
 import { Filter, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const TransactionFilters = () => {
   const filters = useBankingStore((state) => state.filters);
   const setFilters = useBankingStore((state) => state.setFilters);
   const clearFilters = useBankingStore((state) => state.clearFilters);
-  const [isOpen, setIsOpen] = useState(false);
-  const hasInitialized = useRef(false);
+  
+  // Initialize isOpen based on whether filters are active (lazy initializer)
+  const [isOpen, setIsOpen] = useState(() => {
+    return !!(filters.dateFrom || filters.dateTo || filters.description || filters.type !== 'All');
+  });
 
   // Local state for immediate input updates (not debounced)
   const [descriptionInput, setDescriptionInput] = useState(filters.description);
@@ -23,10 +26,10 @@ export const TransactionFilters = () => {
   }, [debouncedDescription, filters.description, setFilters]);
 
   // Handle clear filters - reset local state too
-  const handleClearFilters = useCallback(() => {
+  const handleClearFilters = () => {
     clearFilters();
     setDescriptionInput('');
-  }, [clearFilters]);
+  };
 
   const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ dateFrom: e.target.value || null });
@@ -45,14 +48,6 @@ export const TransactionFilters = () => {
     filters.dateTo ||
     filters.description ||
     filters.type !== 'All';
-
-  // Auto-open if filters are active on initial render
-  useEffect(() => {
-    if (!hasInitialized.current && hasActiveFilters) {
-      setIsOpen(true);
-      hasInitialized.current = true;
-    }
-  }, [hasActiveFilters]);
 
   return (
     <div className="mb-4 sm:mb-6 lg:mb-0">

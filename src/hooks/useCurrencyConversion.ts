@@ -46,9 +46,9 @@ export function useCurrencyConversion(): UseCurrencyConversionReturn {
     loadRates();
   }, [loadRates]);
 
-  const handleSetCurrency = useCallback((currency: CurrencyCode) => {
+  const handleSetCurrency = (currency: CurrencyCode) => {
     setSelectedCurrencyStore(currency);
-  }, [setSelectedCurrencyStore]);
+  };
 
   const convert = useCallback((amountEUR: number): number => {
     if (!rates || selectedCurrency === DEFAULT_CURRENCY) {

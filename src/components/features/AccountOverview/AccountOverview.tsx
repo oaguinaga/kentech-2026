@@ -34,8 +34,6 @@ export const AccountOverview = () => {
   const totalIncome = useMemo(() => convert(totalIncomeEUR), [totalIncomeEUR, convert]);
   const totalExpenses = useMemo(() => convert(totalExpensesEUR), [totalExpensesEUR, convert]);
 
-  const actualBalance = formatCurrency(balance, selectedCurrency);
-
   return (
     <div>
       {/* Main Balance Card */}
@@ -49,7 +47,7 @@ export const AccountOverview = () => {
               isBalanceVisible ? 'blur-0' : 'blur-md select-none'
             }`}
           >
-            {actualBalance}
+            {formatCurrency(balance, selectedCurrency)}
           </p>
           <button
             onClick={toggleBalanceVisibility}

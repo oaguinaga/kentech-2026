@@ -48,6 +48,9 @@ npm run test:run   # Vitest (run once)
 
 - **Deposits** are stored as **positive** amounts.
 - **Withdrawals** are stored as **negative** amounts.
+- **All amounts are stored in EUR** (base currency) regardless of the selected display currency.
+- **Currency conversion**: When entering amounts, users enter values in the selected display currency, which are converted to EUR for storage. When editing, EUR amounts are converted back to the selected currency for display.
+- **Rounding**: Currency conversions may result in minor rounding differences (amounts are rounded to 2 decimal places for display). The stored EUR values maintain full precision for calculations.
 
 ## CSV format (notes)
 

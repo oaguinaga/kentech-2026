@@ -16,8 +16,7 @@ import { BanknoteArrowDown, BanknoteArrowUp, Moon, Plus, Sun } from 'lucide-reac
 import { useState } from 'react';
 
 function App() {
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | undefined>();
@@ -27,26 +26,39 @@ function App() {
   const deleteTransaction = useBankingStore((state) => state.deleteTransaction);
   const { isDark, toggle } = useDarkMode();
 
+  // Determine dialog mode and title
+  const getDialogTitle = () => {
+    if (editingTransaction) return 'Edit Transaction';
+    if (reuseTransaction) return 'Reuse Transaction';
+    return 'Add Transaction';
+  };
+
   const handleAddClick = () => {
+    setEditingTransaction(undefined);
     setReuseTransaction(undefined);
-    setIsAddDialogOpen(true);
+    setDefaultTransactionType(undefined);
+    setIsTransactionDialogOpen(true);
   };
 
   const handleAddDeposit = () => {
+    setEditingTransaction(undefined);
     setReuseTransaction(undefined);
     setDefaultTransactionType('Deposit');
-    setIsAddDialogOpen(true);
+    setIsTransactionDialogOpen(true);
   };
 
   const handleAddWithdrawal = () => {
+    setEditingTransaction(undefined);
     setReuseTransaction(undefined);
     setDefaultTransactionType('Withdrawal');
-    setIsAddDialogOpen(true);
+    setIsTransactionDialogOpen(true);
   };
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
-    setIsEditDialogOpen(true);
+    setReuseTransaction(undefined);
+    setDefaultTransactionType(undefined);
+    setIsTransactionDialogOpen(true);
   };
 
   const handleDelete = (transaction: Transaction) => {
@@ -68,30 +80,24 @@ function App() {
   };
 
   const handleReuse = (transaction: Transaction) => {
+    setEditingTransaction(undefined);
     setReuseTransaction(transaction);
-    setIsAddDialogOpen(true);
+    setDefaultTransactionType(undefined);
+    setIsTransactionDialogOpen(true);
   };
 
-  const handleAddSuccess = () => {
-    setIsAddDialogOpen(false);
+  const handleTransactionSuccess = () => {
+    setIsTransactionDialogOpen(false);
+    setEditingTransaction(undefined);
     setReuseTransaction(undefined);
     setDefaultTransactionType(undefined);
   };
 
-  const handleEditSuccess = () => {
-    setIsEditDialogOpen(false);
+  const handleTransactionCancel = () => {
+    setIsTransactionDialogOpen(false);
     setEditingTransaction(undefined);
-  };
-
-  const handleAddCancel = () => {
-    setIsAddDialogOpen(false);
     setReuseTransaction(undefined);
     setDefaultTransactionType(undefined);
-  };
-
-  const handleEditCancel = () => {
-    setIsEditDialogOpen(false);
-    setEditingTransaction(undefined);
   };
 
   return (
@@ -182,35 +188,20 @@ function App() {
           <UndoToast />
         </main>
 
-        {/* Add Transaction Dialog */}
+        {/* Transaction Dialog (Add/Edit/Reuse) */}
         <Dialog
-          isOpen={isAddDialogOpen}
-          onClose={handleAddCancel}
-          title={reuseTransaction ? 'Reuse Transaction' : 'Add Transaction'}
+          isOpen={isTransactionDialogOpen}
+          onClose={handleTransactionCancel}
+          title={getDialogTitle()}
           size="md"
         >
           <TransactionForm
+            transaction={editingTransaction}
             defaultType={defaultTransactionType || reuseTransaction?.type}
-            onSuccess={handleAddSuccess}
-            onCancel={handleAddCancel}
+            onSuccess={handleTransactionSuccess}
+            onCancel={handleTransactionCancel}
             reuseTransaction={reuseTransaction}
           />
-        </Dialog>
-
-        {/* Edit Transaction Dialog */}
-        <Dialog
-          isOpen={isEditDialogOpen}
-          onClose={handleEditCancel}
-          title="Edit Transaction"
-          size="md"
-        >
-          {editingTransaction && (
-            <TransactionForm
-              transaction={editingTransaction}
-              onSuccess={handleEditSuccess}
-              onCancel={handleEditCancel}
-            />
-          )}
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
