@@ -15,6 +15,14 @@ export type TransactionFilters = {
 
 /**
  * Banking store state and actions
+ * 
+ * Note: Undo functionality supports single-level undo only (last add or delete).
+ * Undo state is automatically cleared when:
+ * - A new transaction is added (clears delete undo)
+ * - A transaction is updated (clears all undo)
+ * - A transaction is deleted (clears add undo)
+ * - Transactions are imported (clears all undo)
+ * - User explicitly clears undo via clearUndo()
  */
 type BankingState = {
   // State
@@ -66,6 +74,17 @@ const initialState = {
   selectedCurrency: 'EUR' as CurrencyCode,
   isBalanceVisible: true,
 };
+
+/**
+ * Helper to create undo state clearing object
+ * Centralizes undo state management to prevent inconsistencies
+ */
+function clearUndoState() {
+  return {
+    lastDeletedTransaction: null,
+    lastAddedTransaction: null,
+  };
+}
 
 /**
  * Calculate balance from transactions array
@@ -162,8 +181,7 @@ export const useBankingStore = create<BankingState>()(
           transactions: state.transactions.map((t) =>
             t.id === id ? { ...t, ...updates } : t
           ),
-          lastAddedTransaction: null, // Clear add undo when updating
-          lastDeletedTransaction: null, // Clear delete undo when updating
+          ...clearUndoState(), // Clear all undo state when updating
         }));
       },
 
@@ -234,7 +252,7 @@ export const useBankingStore = create<BankingState>()(
 
       // Clear undo state
       clearUndo: () => {
-        set({ lastDeletedTransaction: null, lastAddedTransaction: null });
+        set(clearUndoState());
       },
 
       // Import transactions (for CSV import)
@@ -249,6 +267,7 @@ export const useBankingStore = create<BankingState>()(
           return {
             transactions: [...state.transactions, ...uniqueNewTransactions],
             currentPage: 1,
+            ...clearUndoState(), // Clear undo state when importing
           };
         });
       },
